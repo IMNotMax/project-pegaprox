@@ -159,7 +159,6 @@
     "changelog": [
         "Snapshot-based replication for non-ZFS clusters (#103)",
         "CVE / package vulnerability scanner per node",
-        "Cluster-wide network overview with VM assignments",
         "Node time/timezone configuration",
         "Language preference persistence across devices",
         "Fix cross-cluster migration node dropdown race condition",
