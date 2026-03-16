@@ -5793,8 +5793,22 @@ echo "AGENT_INSTALLED_OK"
             self.logger.error(f"Error getting datacenter options: {e}")
             return {'success': False, 'error': str(e)}
     
+    def get_metric_servers(self) -> list:
+        if not self.is_connected:
+            if not self.connect_to_proxmox():
+                return []
+        try:
+            url = f"https://{self.host}:8006/api2/json/cluster/metrics/server"
+            response = self._api_get(url)
+            if response.status_code == 200:
+                return response.json().get('data', [])
+            return []
+        except Exception as e:
+            self.logger.error(f"Error getting metric servers: {e}")
+            return []
+
     def stop_task(self, node: str, upid: str) -> bool:
-        
+
         if not self.is_connected:
             if not self.connect_to_proxmox():
                 return False

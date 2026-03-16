@@ -1904,3 +1904,16 @@ def discover_iscsi_api(cluster_id, node):
     return jsonify(result)
 
 
+@bp.route('/api/clusters/<cluster_id>/datacenter/metric-servers', methods=['GET'])
+@require_auth(perms=['node.view'])
+def get_metric_servers(cluster_id):
+    """Get configured metric servers (InfluxDB, Graphite) from Proxmox"""
+    ok, err = check_cluster_access(cluster_id)
+    if not ok: return err
+
+    manager, error = get_connected_manager(cluster_id)
+    if error:
+        return error
+
+    return jsonify(manager.get_metric_servers())
+

@@ -1283,6 +1283,7 @@
                 haGroups: 'HA Gruppen',
                 haStatus: 'HA Status',
                 
+                metricServer: 'Metric Server',
                 cpuCompatibility: 'CPU Kompatibilität',
                 cpuCompatibilityMode: 'CPU Kompatibilitätsmodus',
                 cpuCompatibilityDesc: 'Stellt Live-Migration Kompatibilität zwischen verschiedenen CPU-Generationen sicher',
@@ -4268,6 +4269,7 @@
                 haGroups: 'HA Groups',
                 haStatus: 'HA Status',
                 
+                metricServer: 'Metric Server',
                 cpuCompatibility: 'CPU Compatibility',
                 cpuCompatibilityMode: 'CPU Compatibility Mode',
                 cpuCompatibilityDesc: 'Ensure live migration compatibility across different CPU generations',
@@ -7206,6 +7208,7 @@
                 haGroups: 'Grupos de HA',
                 haStatus: 'Estado de HA',
                 
+                metricServer: 'Servidor de Métricas',
                 cpuCompatibility: 'Compatibilidad de CPU',
                 cpuCompatibilityMode: 'Modo de compatibilidad de CPU',
                 cpuCompatibilityDesc: 'Asegure compatibilidad con migración en línea a través de las diferentes generaciones de CPU',
@@ -9895,6 +9898,7 @@
                 haResources: 'Recursos de HA',
                 haGroups: 'Grupos de HA',
                 
+                metricServer: 'Servidor de Métricas',
                 cpuCompatibility: 'Compatibilidade de CPU',
                 cpuCompatibilityMode: 'Modo de Compatibilidade de CPU',
                 cpuCompatibilityDesc: 'Garante a compatibilidade de live migration entre diferentes gerações de CPU',

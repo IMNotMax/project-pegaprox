@@ -63,6 +63,7 @@
             const [newHaResource, setNewHaResource] = useState({ sid: '', state: 'started', group: '', max_restart: 1, max_relocate: 1, comment: '' });
             const [newHaGroup, setNewHaGroup] = useState({ group: '', nodes: '', restricted: 0, nofailback: 0 });
             
+            const [metricServers, setMetricServers] = useState([]);
             const [showAddBackupJob, setShowAddBackupJob] = useState(false);
             // const [editBackupJob, setEditBackupJob] = useState(null);  // later
             const [newBackupJob, setNewBackupJob] = useState({
@@ -262,6 +263,7 @@
                 { id: 'cpucompat', labelKey: 'cpuCompatibility', icon: Icons.Cpu, descKey: 'cpucompat' },
                 { id: 'firewall', labelKey: 'firewall', icon: Icons.Shield, descKey: 'firewall' },
                 { id: 'ceph', labelKey: 'ceph', icon: Icons.Database, descKey: 'ceph' },
+                { id: 'metricserver', labelKey: 'metricServer', icon: Icons.BarChart, descKey: 'metricserver' },
             ];
 
             const storageTypes = [
@@ -460,7 +462,17 @@
 
             useEffect(() => {
                 if (activeSection === 'ceph') fetchCephData();
+                if (activeSection === 'metricserver') loadMetricServers();
             }, [activeSection]);
+
+            const loadMetricServers = async () => {
+                try {
+                    const res = await authFetch(`${API_URL}/clusters/${clusterId}/datacenter/metric-servers`);
+                    if (res?.ok) setMetricServers(await res.json());
+                } catch (e) {
+                    console.error('Error loading metric servers:', e);
+                }
+            };
 
             // NS: Dedicated function to refresh only storage list without full reload
             const refreshStorage = async () => {
@@ -6766,6 +6778,80 @@
                                             </div>
                                         )}
                                     </>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Metric Server Sub-Tab */}
+                        {activeSection === 'metricserver' && (
+                            <div className={isCorporate ? 'space-y-2' : 'space-y-4'}>
+                                {isCorporate ? (
+                                    <div style={{ background: 'var(--corp-header-bg)', border: '1px solid var(--corp-border)', borderRadius: 4 }}>
+                                        <div className="flex justify-between items-center px-3 py-2" style={{ borderBottom: '1px solid var(--corp-border)' }}>
+                                            <span className="text-xs font-semibold" style={{ color: 'var(--corp-text)' }}>Metric Servers</span>
+                                            <button onClick={loadMetricServers} className="corp-action-btn" title="Refresh">
+                                                <Icons.RefreshCw style={{ width: 14, height: 14 }} />
+                                            </button>
+                                        </div>
+                                        {metricServers.length === 0 ? (
+                                            <div className="p-4 text-center text-xs text-gray-500">No metric servers configured</div>
+                                        ) : metricServers.map((s, idx) => (
+                                            <div key={idx} className="px-3 py-2 flex items-center gap-3 text-xs" style={{ borderBottom: idx < metricServers.length - 1 ? '1px solid var(--corp-border)' : 'none' }}>
+                                                <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${s.type === 'influxdb' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'}`}>{s.type}</span>
+                                                <span className="font-medium" style={{ color: 'var(--corp-text)' }}>{s.id}</span>
+                                                <span className="text-gray-400">{s.server}:{s.port}</span>
+                                                <span className={`ml-auto px-1.5 py-0.5 rounded text-xs ${s.disable ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>{s.disable ? 'Disabled' : 'Enabled'}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="bg-proxmox-card border border-proxmox-border rounded-xl overflow-hidden">
+                                        <div className="p-4 border-b border-proxmox-border flex justify-between items-center">
+                                            <h3 className="font-semibold flex items-center gap-2">
+                                                <Icons.BarChart className="w-5 h-5 text-proxmox-orange" />
+                                                Metric Servers
+                                            </h3>
+                                            <button onClick={loadMetricServers} className="flex items-center gap-2 px-3 py-1.5 bg-proxmox-dark hover:bg-proxmox-hover border border-proxmox-border rounded-lg text-sm transition-colors">
+                                                <Icons.RefreshCw className="w-4 h-4" /> Refresh
+                                            </button>
+                                        </div>
+                                        {metricServers.length === 0 ? (
+                                            <div className="p-8 text-center text-gray-500">No metric servers configured</div>
+                                        ) : (
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full">
+                                                    <thead className="bg-proxmox-dark">
+                                                        <tr>
+                                                            <th className="text-left p-3 text-sm text-gray-400">Name</th>
+                                                            <th className="text-left p-3 text-sm text-gray-400">Type</th>
+                                                            <th className="text-left p-3 text-sm text-gray-400">Server</th>
+                                                            <th className="text-left p-3 text-sm text-gray-400">Port</th>
+                                                            <th className="text-left p-3 text-sm text-gray-400">Status</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {metricServers.map((s, idx) => (
+                                                            <tr key={idx} className="border-t border-proxmox-border hover:bg-proxmox-dark/50">
+                                                                <td className="p-3 font-medium">{s.id}</td>
+                                                                <td className="p-3">
+                                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${s.type === 'influxdb' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'}`}>
+                                                                        {s.type === 'influxdb' ? 'InfluxDB' : 'Graphite'}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="p-3 text-gray-300 font-mono text-sm">{s.server}</td>
+                                                                <td className="p-3 text-gray-300 font-mono text-sm">{s.port}</td>
+                                                                <td className="p-3">
+                                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${s.disable ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
+                                                                        {s.disable ? 'Disabled' : 'Enabled'}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         )}
