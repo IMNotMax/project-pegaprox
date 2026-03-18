@@ -6970,7 +6970,7 @@ const translations = {
 
         // Reports - NS Jan 2026
         reports: 'Rapports',
-        reportsAnalytics: 'Rapports et Analyse',
+        reportsAnalytics: 'Rapports et Analyses',
         lastHour: 'Dernière heure',
         last24h: 'Dernières 24 heures',
         lastWeek: 'La semaine dernière',
